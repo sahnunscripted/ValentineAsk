@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --pink-light: #ffe0ec;
+  --pink-medium: #ffb6d3;
+  --pink-dark: #e91e8c;
+  --pink-deeper: #c2185b;
+  --rose-gold: #b76e79;
+  --cream: #fff5f7;
+  --text-dark: #5c1a3a;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Quicksand', sans-serif;
+  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 25%, #f48fb1 50%, #f8bbd0 75%, #fce4ec 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+  overflow-x: hidden;
+  color: var(--text-dark);
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
