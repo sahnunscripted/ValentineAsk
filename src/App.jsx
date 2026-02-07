@@ -185,7 +185,151 @@ function Page1({ onNext }) {
   )
 }
 
-// Page 2: Message tease
+// "It's a Match" overlay
+function ItsAMatch({ onDone }) {
+  const [fading, setFading] = useState(false)
+
+  useState(() => {
+    const fadeTimer = setTimeout(() => setFading(true), 2200)
+    const doneTimer = setTimeout(() => onDone(), 3000)
+    return () => {
+      clearTimeout(fadeTimer)
+      clearTimeout(doneTimer)
+    }
+  })
+
+  return (
+    <div className={`match-overlay ${fading ? 'match-fade-out' : ''}`}>
+      <div className="match-content">
+        <div className="match-hearts">💕</div>
+        <h1 className="match-title">It&rsquo;s a Match!</h1>
+        <p className="match-subtitle">Identity confirmed — Welcome, Hiba 💗</p>
+        <div className="match-glow" />
+      </div>
+    </div>
+  )
+}
+
+// Page 2: Identity verification
+function IdentityPage({ onNext }) {
+  const [answers, setAnswers] = useState({ q1: '', q2: '', q3: '' })
+  const [errors, setErrors] = useState({ q1: '', q2: '', q3: '' })
+  const [showMatch, setShowMatch] = useState(false)
+
+  const checkAnswer = (key, value) => {
+    const trimmed = value.trim()
+    if (!trimmed) return false
+
+    if (key === 'q1') {
+      return /^sanborn(\s+elementary)?(\s+school)?$/i.test(trimmed)
+    }
+    if (key === 'q2') {
+      return /^al[-\s]?qassimi$/i.test(trimmed)
+    }
+    if (key === 'q3') {
+      return /^mercy\s*me$/i.test(trimmed)
+    }
+    return false
+  }
+
+  const handleSubmit = () => {
+    const newErrors = {}
+    let allCorrect = true
+
+    if (!checkAnswer('q1', answers.q1)) {
+      newErrors.q1 = 'Hmm, that doesn\'t seem right. Try again!'
+      allCorrect = false
+    }
+    if (!checkAnswer('q2', answers.q2)) {
+      newErrors.q2 = 'That\'s not quite it. Try again!'
+      allCorrect = false
+    }
+    if (!checkAnswer('q3', answers.q3)) {
+      newErrors.q3 = 'Not quite! Think back to that day...'
+      allCorrect = false
+    }
+
+    setErrors(newErrors)
+
+    if (allCorrect) {
+      setShowMatch(true)
+    }
+  }
+
+  if (showMatch) {
+    return <ItsAMatch onDone={onNext} />
+  }
+
+  return (
+    <div className="card-container" key="identity">
+      <div style={{ fontSize: '3rem', marginBottom: '15px' }}>🔐</div>
+      <h1 className="page-title">Confirm Your Identity</h1>
+      <HeartDivider />
+      <p className="page-subtitle">
+        Dini can only ask Hiba to be his Valentine so we have to confirm your identity.
+      </p>
+
+      <div className="identity-questions">
+        <div className="identity-question">
+          <label className="identity-label">
+            What was the name of the school you went to for 2nd grade?
+          </label>
+          <input
+            type="text"
+            className={`identity-input ${errors.q1 ? 'input-error' : ''}`}
+            value={answers.q1}
+            onChange={(e) => {
+              setAnswers({ ...answers, q1: e.target.value })
+              if (errors.q1) setErrors({ ...errors, q1: '' })
+            }}
+            placeholder="Type your answer..."
+          />
+          {errors.q1 && <span className="error-text">{errors.q1}</span>}
+        </div>
+
+        <div className="identity-question">
+          <label className="identity-label">
+            What's the name of the hospital your mother worked at?
+          </label>
+          <input
+            type="text"
+            className={`identity-input ${errors.q2 ? 'input-error' : ''}`}
+            value={answers.q2}
+            onChange={(e) => {
+              setAnswers({ ...answers, q2: e.target.value })
+              if (errors.q2) setErrors({ ...errors, q2: '' })
+            }}
+            placeholder="Type your answer..."
+          />
+          {errors.q2 && <span className="error-text">{errors.q2}</span>}
+        </div>
+
+        <div className="identity-question">
+          <label className="identity-label">
+            What was the name of restaurant we went to on March 5th, 2022?
+          </label>
+          <input
+            type="text"
+            className={`identity-input ${errors.q3 ? 'input-error' : ''}`}
+            value={answers.q3}
+            onChange={(e) => {
+              setAnswers({ ...answers, q3: e.target.value })
+              if (errors.q3) setErrors({ ...errors, q3: '' })
+            }}
+            placeholder="Type your answer..."
+          />
+          {errors.q3 && <span className="error-text">{errors.q3}</span>}
+        </div>
+
+        <button className="valentine-btn primary" onClick={handleSubmit}>
+          Verify My Identity 💕
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// Page 3: Message tease
 function Page2({ onNext }) {
   return (
     <div className="card-container" key="page2">
@@ -251,8 +395,7 @@ function Page5() {
       <Confetti />
       <div className="card-container" key="page5">
         <div className="celebration">
-          <div className="celebration-hearts">💕🥰💕</div>
-          <h1 className="celebration-text">She Said Yes!</h1>
+          <img src="/us.jpg" alt="Us" className="celebration-photo" />
           <HeartDivider />
           <p className="celebration-subtext">
             Happy Valentine's Day, Hiba!
@@ -283,6 +426,7 @@ function App() {
 
   const pages = [
     <Page1 onNext={nextPage} />,
+    <IdentityPage onNext={nextPage} />,
     <Page2 onNext={nextPage} />,
     <Page3 onNext={nextPage} />,
     <Page4 onNext={nextPage} />,
